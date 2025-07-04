@@ -17,7 +17,7 @@ Whether you're fixing bugs, suggesting features, or just trying to help — you'
 
 ## 🐞 Found a Bug?
 
-- Check if it’s already reported under [Issues](https://github.com/VoxaCode/wave/issues)
+- Check if it’s already reported under [Issues](https://github.com/VoxaCode/Wave/issues)
 - If not, create a new one — include steps to reproduce if possible!
 
 ## 💡 Got a Feature Idea?

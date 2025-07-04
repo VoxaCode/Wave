@@ -67,6 +67,4 @@ Check out the [LICENSE](LICENSE) file for details.
 ## 👨‍💻 Built By
 
 **Deepak Singh**  
-GitHub: [@VoxaCode](https://github.com/VoxaCode)**  
-GitHub: [@VoxaCode](https://github.com/VoxaCode)ak Singh**  
 GitHub: [@VoxaCode](https://github.com/VoxaCode)
