@@ -4,8 +4,6 @@
 
 # 🌊 Wave — Share Files Without Internet
 
-[![GitHub release](https://img.shields.io/github/v/release/VoxaCode/Wave)](https://github.com/VoxaCode/Wave/releases)
-
 **Wave** is a simple and fast Android app that lets you share files with nearby devices — no internet needed.  
 It uses your phone’s built-in ability to create a **local-only Wi-Fi hotspot** and connects other devices through a QR code.  
 Just open the app, scan, and share — it's that easy!
@@ -16,24 +14,9 @@ Wave is built with **Material 3**, giving it a clean, modern look that feels rig
 
 ## 📸 Screenshots
 
-<table style="width: 100%;">
-  <tr>
-    <td align="center" style="width: 33.33%;">
-      <b>Connection Screen</b><br>
-      <img src="screenshots/connection_screen.jpg" style="height: auto; width: 100%; object-fit: contain;"/>
-    </td>
-    <td align="center" style="width: 33.33%;">
-      <b>File Selection</b><br>
-      <img src="screenshots/selection_screen.jpg" style="height: auto; width: 100%; object-fit: contain;"/>
-    </td>
-    <td align="center" style="width: 33.33%;" >
-      <b>Transfer Screen</b><br>
-      <img src="screenshots/transfer_screen.jpg" style="height: auto; width: 100%; object-fit: contain;"/>
-    </td>
-  </tr>
-</table>
-
---- 
+| Connection Screen | File Selection | File Transfer |
+|:-----------------:|:--------------:|:-------------:|
+| <img src="screenshots/connection_screen.jpg" width="1080" height="2302"> | <img src="screenshots/selection_screen.jpg" width="1080" height="2299"> | <img src="screenshots/transfer_screen.jpg" width="1080" height="2297"> |
 
 ## 🧭 How to Use
 
