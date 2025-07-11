@@ -16,7 +16,7 @@ Wave is built with **Material 3**, giving it a clean, modern look that feels rig
 
 | Connection Screen | File Selection | File Transfer |
 |:-----------------:|:--------------:|:-------------:|
-| <img src="screenshots/connection_screen.jpg" width="100%"> | <img src="screenshots/selection_screen.jpg" width="100%"> | <img src="screenshots/transfer_screen.jpg" width="100%"> |
+| <img src="screenshots/connection_screen.jpg" width="1080" height="2302"> | <img src="screenshots/selection_screen.jpg" width="1080" height="2299"> | <img src="screenshots/transfer_screen.jpg" width="1080" height="2297"> |
 
 ## 🧭 How to Use
 
