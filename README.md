@@ -14,9 +14,26 @@ Wave is built with **Material 3**, giving it a clean, modern look that feels rig
 
 ## 📸 Screenshots
 
-| Connection Screen | File Selection | File Transfer |
-|:-----------------:|:--------------:|:-------------:|
-| <img src="screenshots/connection_screen.jpg" width="1080" height="2302"> | <img src="screenshots/selection_screen.jpg" width="1080" height="2299"> | <img src="screenshots/transfer_screen.jpg" width="1080" height="2297"> |
+<table>
+  <tr>
+    <td align="center">
+      <b>Connection Screen</b><br>
+      <img src="screenshots/connection_screen.jpg" height="250"/>
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <b>File Selection</b><br>
+      <img src="screenshots/selection_screen.jpg" height="250"/>
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <b>Transfer Screen</b><br>
+      <img src="screenshots/transfer_screen.jpg" height="250"/>
+    </td>
+  </tr>
+</table>
 
 ## 🧭 How to Use
 
