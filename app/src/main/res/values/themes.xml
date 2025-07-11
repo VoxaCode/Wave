@@ -1,0 +1,45 @@
+<resources>
+    <style name="AppTheme" parent="Theme.Material3.Light.NoActionBar">
+      <item  name="android:windowActivityTransitions">true</item>
+    </style>
+    
+    <style name="FilledTonalButtonStyle" parent="Widget.Material3.Button.TonalButton">
+      <item name="android:fontFamily">@font/montserrat_regular</item>
+    </style>
+    
+    <style name="FilledButtonStyle" parent="Widget.Material3.Button">
+      <item name="android:fontFamily">@font/montserrat_regular</item>
+    </style>
+   
+    <style name="AlertDialogStyle" parent="ThemeOverlay.Material3.MaterialAlertDialog">
+      <item name="materialAlertDialogTitleTextStyle">@style/AlertDialog.TitleTextStyle</item>
+      <item name="materialAlertDialogBodyTextStyle">@style/AlertDialog.BodyTextStyle</item>
+      <item name="buttonBarNegativeButtonStyle">@style/AlertDialog.ButtonStyle</item>
+      <item name="buttonBarPositiveButtonStyle">@style/AlertDialog.ButtonStyle</item>
+      <item name="buttonBarNeutralButtonStyle">@style/AlertDialog.ButtonStyle</item>
+    </style>
+    
+    <style name="AlertDialog.TitleTextStyle" parent="MaterialAlertDialog.Material3.Title.Text">
+      <item name="android:fontFamily">@font/lexend_regular</item>
+    </style>
+    
+    <style name="AlertDialog.BodyTextStyle" parent="MaterialAlertDialog.Material3.Body.Text">
+      <item name="android:fontFamily">@font/montserrat_regular</item>  
+    </style>
+     
+    <style name="AlertDialog.ButtonStyle" parent="Widget.Material3.Button.TextButton.Dialog">
+      <item name="android:fontFamily">@font/montserrat_regular</item>
+    </style>
+    
+    <style name="UnexpectedErrorDialogStyle" parent="AlertDialogStyle">
+      <item name="android:background">?attr/colorErrorContainer</item>
+      <item name="buttonBarNegativeButtonStyle">@style/UnexpectedErrorDialog.ButtonStyle</item>
+      <item name="buttonBarPositiveButtonStyle">@style/UnexpectedErrorDialog.ButtonStyle</item>
+      <item name="buttonBarNeutralButtonStyle">@style/UnexpectedErrorDialog.ButtonStyle</item>
+    </style>
+  
+    <style name="UnexpectedErrorDialog.ButtonStyle" parent="AlertDialog.ButtonStyle">
+      <item name="rippleColor">?attr/colorOnErrorContainer</item>
+    </style>
+    
+</resources>

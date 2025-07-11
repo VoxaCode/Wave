@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+     xmlns:android="http://schemas.android.com/apk/res/android"
+     xmlns:app="http://schemas.android.com/apk/res-auto"
+     android:layout_height="match_parent"
+     android:layout_width="match_parent">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+         android:layout_height="140dp"
+         android:layout_width="match_parent"
+         android:id="@+id/top_container"
+         android:paddingLeft="18dp">
+        
+        <TextView
+             android:layout_height="wrap_content"
+             android:layout_width="wrap_content"
+             app:layout_constraintVertical_chainStyle="packed"
+             app:layout_constraintTop_toTopOf="parent"
+             android:textSize="43sp"
+             android:fontFamily="@font/lexend_regular"
+             app:layout_constraintBottom_toTopOf="@id/speed_container"
+             android:id="@+id/txt_sending"
+             app:layout_constraintLeft_toLeftOf="parent"
+             android:text="Sending" />
+
+         <androidx.constraintlayout.widget.ConstraintLayout
+             android:layout_height="wrap_content"
+             android:layout_width="wrap_content"
+             app:layout_constraintVertical_chainStyle="packed"
+             android:layout_marginLeft="8dp"
+             app:layout_constraintLeft_toLeftOf="parent"
+             app:layout_constraintBottom_toBottomOf="parent"
+             app:layout_constraintTop_toBottomOf="@id/txt_sending"
+             android:id="@+id/speed_container">
+
+            <ImageView
+                 android:layout_height="26dp"
+                 android:layout_width="26dp"
+                 android:src="@drawable/speed_24px"
+                 app:layout_constraintRight_toLeftOf="@id/txt_speed"
+                 app:layout_constraintTop_toTopOf="parent"
+                 android:layout_marginRight="5dp"
+                 app:layout_constraintBottom_toBottomOf="parent"
+                 android:id="@+id/icon_speed"
+                 app:layout_constraintLeft_toLeftOf="parent" />
+
+            <TextView
+                 android:layout_height="wrap_content"
+                 android:layout_width="wrap_content"
+                 app:layout_constraintTop_toTopOf="parent"
+                 android:fontFamily="@font/lexend_regular"
+                 android:textSize="14sp"
+                 app:layout_constraintLeft_toRightOf="@id/icon_speed"
+                 app:layout_constraintBottom_toBottomOf="parent"
+                 app:layout_constraintRight_toRightOf="parent"
+                 android:text="0B/s"
+                 android:id="@+id/txt_speed" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    
+    </androidx.constraintlayout.widget.ConstraintLayout>
+    
+    <include
+         layout="@layout/layout_file_transfer_successful"
+         android:visibility="invisible"
+         android:layout_height="match_parent"
+         android:layout_width="match_parent"
+         android:id="@+id/transfer_successful" />
+     
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+         android:layout_height="220dp"
+         android:layout_width="220dp"
+         android:indeterminate="true"
+         app:indicatorSize="220dp"
+         app:layout_constraintTop_toTopOf="parent"
+         app:trackCornerRadius="5dp"
+         app:layout_constraintBottom_toBottomOf="parent"
+         app:layout_constraintVertical_bias=".32"
+         app:trackThickness="5dp"
+         app:layout_constraintLeft_toLeftOf="parent"
+         app:layout_constraintRight_toRightOf="parent"
+         android:id="@+id/file_progress" />
+
+    <com.google.android.material.card.MaterialCardView
+         android:layout_height="0dp"
+         android:layout_width="0dp"
+         app:layout_constraintTop_toTopOf="@id/file_progress"
+         android:layout_margin="9dp"
+         style="?attr/materialCardViewFilledStyle"
+         app:layout_constraintBottom_toBottomOf="@id/file_progress"
+         app:cardCornerRadius="500dp"
+         app:layout_constraintLeft_toLeftOf="@id/file_progress"
+         app:layout_constraintRight_toRightOf="@id/file_progress"
+         android:id="@+id/cardview_center">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+             android:layout_height="match_parent"
+             android:layout_width="match_parent">
+
+            <ImageView
+                 android:layout_height="60dp"
+                 android:layout_width="60dp"
+                 android:src="@drawable/file_24px"
+                 app:layout_constraintTop_toTopOf="parent"
+                 app:layout_constraintBottom_toBottomOf="parent"
+                 android:id="@+id/file_icon"
+                 app:layout_constraintLeft_toLeftOf="parent"
+                 app:layout_constraintRight_toRightOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+    
+    <com.google.android.material.card.MaterialCardView
+         android:layout_height="70dp"
+         android:layout_width="200dp"
+         android:id="@+id/cardview_file_info"
+         style="?attr/materialCardViewFilledStyle"
+         android:layout_marginTop="40dp"
+         app:layout_constraintTop_toBottomOf="@id/cardview_center"
+         app:layout_constraintLeft_toLeftOf="parent"
+         app:layout_constraintRight_toRightOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+             android:layout_height="match_parent"
+             android:layout_width="match_parent">
+
+            <TextView
+                 android:layout_height="wrap_content"
+                 android:layout_width="0dp"
+                 android:ellipsize="end"
+                 android:textSize="13sp"
+                 android:layout_marginLeft="12dp"
+                 app:layout_constraintBottom_toBottomOf="parent"
+                 app:layout_constraintLeft_toLeftOf="parent"
+                 android:textAlignment="textStart"
+                 app:layout_constraintRight_toLeftOf="@id/file_size_container"
+                 app:layout_constraintTop_toTopOf="parent"
+                 android:fontFamily="@font/montserrat_regular"
+                 android:layout_marginRight="17dp"
+                 android:maxLines="1"
+                 android:id="@+id/file_name"
+                 android:text="waiting..." />
+
+            <LinearLayout
+                 android:layout_height="wrap_content"
+                 android:layout_width="wrap_content"
+                 android:background="@drawable/dashed_border"
+                 app:layout_constraintTop_toTopOf="parent"
+                 android:layout_marginRight="17dp"
+                 app:layout_constraintBottom_toBottomOf="parent"
+                 app:layout_constraintRight_toRightOf="parent"
+                 android:id="@+id/file_size_container">
+
+                <TextView
+                     android:layout_height="wrap_content"
+                     android:layout_width="wrap_content"
+                     android:layout_margin="10dp"
+                     android:textSize="13sp"
+                     android:fontFamily="@font/montserrat_regular"
+                     android:layout_gravity="center"
+                     android:id="@+id/file_size"
+                     android:text="0B" />
+
+            </LinearLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
