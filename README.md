@@ -18,15 +18,15 @@ Wave is built with **Material 3**, giving it a clean, modern look that feels rig
   <tr>
     <td align="center" style="width: 33.33%;">
       <b>Connection Screen</b><br>
-      <img src="screenshots/connection_screen.jpg" style="height: 100%;"/>
+      <img src="screenshots/connection_screen.jpg" style="height: auto; width: 100%; object-fit: contain;"/>
     </td>
     <td align="center" style="width: 33.33%;">
       <b>File Selection</b><br>
-      <img src="screenshots/selection_screen.jpg" style="height: 100%;"/>
+      <img src="screenshots/selection_screen.jpg" style="height: auto; width: 100%; object-fit: contain;"/>
     </td>
     <td align="center" style="width: 33.33%;" >
       <b>Transfer Screen</b><br>
-      <img src="screenshots/transfer_screen.jpg" style="height: 100%;"/>
+      <img src="screenshots/transfer_screen.jpg" style="height: auto; width: 100%; object-fit: contain;"/>
     </td>
   </tr>
 </table>
