@@ -4,6 +4,8 @@
 
 # 🌊 Wave — Share Files Without Internet
 
+[![GitHub release](https://img.shields.io/github/v/release/VoxaCode/Wave)](https://github.com/VoxaCode/Wave/releases)
+
 **Wave** is a simple and fast Android app that lets you share files with nearby devices — no internet needed.  
 It uses your phone’s built-in ability to create a **local-only Wi-Fi hotspot** and connects other devices through a QR code.  
 Just open the app, scan, and share — it's that easy!
@@ -65,4 +67,4 @@ Check out the [LICENSE](LICENSE) file for details.
 ## 👨‍💻 Built By
 
 **Deepak Singh**  
-GitHub: [@VoxaCode](https://github.com/VoxaCode)
+GitHub: [@VoxaCode](https://github.com/VoxaCode)/VoxaCode)
