@@ -20,14 +20,10 @@ Wave is built with **Material 3**, giving it a clean, modern look that feels rig
       <b>Connection Screen</b><br>
       <img src="screenshots/connection_screen.jpg" height="250"/>
     </td>
-  </tr>
-  <tr>
     <td align="center">
       <b>File Selection</b><br>
       <img src="screenshots/selection_screen.jpg" height="250"/>
     </td>
-  </tr>
-  <tr>
     <td align="center">
       <b>Transfer Screen</b><br>
       <img src="screenshots/transfer_screen.jpg" height="250"/>
