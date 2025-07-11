@@ -31,6 +31,16 @@ Wave is built with **Material 3**, giving it a clean, modern look that feels rig
   </tr>
 </table>
 
+---
+
+## 📲 Installation
+
+You can download the latest APK from the above sources.
+
+[![GitHub release](https://img.shields.io/github/v/release/VoxaCode/Wave)](https://github.com/VoxaCode/Wave/releases)
+
+--- 
+
 ## 🧭 How to Use
 
 1. Open **Wave** on both devices  
