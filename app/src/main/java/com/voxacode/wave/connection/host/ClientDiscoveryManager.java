@@ -77,7 +77,7 @@ public class ClientDiscoveryManager {
                                 stopDiscovery();
                                 clientListener.onClientDiscovered();
                             } catch( Exception e ) {
-                                isDiscovering = false;    
+                                stopDiscovery();
                             }
                         }
                     ).start();

@@ -24,7 +24,6 @@ public class ClientDiscoveryResponseManager {
         void onClientDiscoveryResponded();
     }
     
-     
     public interface OnErrorOccuredListener {
         void onErrorOccured( Exception e );
     }
@@ -43,8 +42,9 @@ public class ClientDiscoveryResponseManager {
 
     private void callbackError( OnErrorOccuredListener errorListener, Exception e ) {
         stopRespondingDiscovery();
-        if( errorListener != null )
+        if( errorListener != null ) {
             errorListener.onErrorOccured( e );
+        }
     }
     
     //Connects to ServerSocket created by discoverer to

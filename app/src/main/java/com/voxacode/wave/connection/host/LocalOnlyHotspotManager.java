@@ -17,8 +17,8 @@ import javax.inject.Singleton;
 public class LocalOnlyHotspotManager {
     
     public interface LocalOnlyHotspotListener {
-        void onLocalOnlyHotspotStarted( LocalOnlyHotspotInfo hotspotInfo );
-        void onLocalOnlyHotspotStopped( LocalOnlyHotspotInfo hotspotInfo );
+        void onStarted( LocalOnlyHotspotInfo hotspotInfo );
+        void onStopped( LocalOnlyHotspotInfo hotspotInfo );
     }
     
     public interface OnErrorOccuredListener {
@@ -66,7 +66,7 @@ public class LocalOnlyHotspotManager {
                     super.onStopped();
                     reservation = null;
                     if( hotspotListener != null ) {
-                        hotspotListener.onLocalOnlyHotspotStopped( hotspotInfo );
+                        hotspotListener.onStopped( hotspotInfo );
                     }
                 }
                 
@@ -86,7 +86,7 @@ public class LocalOnlyHotspotManager {
                     reservation = mReservation;
                     hotspotInfo = LocalOnlyHotspotInfo.fromLocalOnlyHotspotReservation( reservation );
                     if( hotspotListener != null ) {
-                        hotspotListener.onLocalOnlyHotspotStarted( hotspotInfo );
+                        hotspotListener.onStarted( hotspotInfo );
                     } 
                 }
             },

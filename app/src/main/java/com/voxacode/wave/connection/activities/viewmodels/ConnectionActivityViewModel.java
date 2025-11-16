@@ -1,5 +1,7 @@
 package com.voxacode.wave.connection.activities.viewmodels;
 
+import android.net.ConnectivityManager;
+import android.net.Network;
 import androidx.annotation.MainThread;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.Observer;
@@ -19,8 +21,6 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -51,11 +51,24 @@ import com.github.alexzhirkevich.customqrgenerator.vector.style.QrVectorLogoShap
 import com.github.alexzhirkevich.customqrgenerator.vector.style.QrVectorPixelShape;
 import com.github.alexzhirkevich.customqrgenerator.vector.style.QrVectorShapes;
 
+import dagger.hilt.android.qualifiers.ApplicationContext;
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import javax.inject.Inject;
 
 @HiltViewModel
 public class ConnectionActivityViewModel extends ViewModel {
+    
+    public enum ConnectionAttemptResult {
+        CONNECTED,
+        FAILED
+    }
+    
+    public enum LocalOnlyHotspotState {
+        STARTED, 
+        STOPPED
+    }
+    
+    private ConnectivityManager connectivityManager;
     
     public static final String KEY_WIFI_SSID = "wifi_ssid";
     public static final String KEY_WIFI_PASSWORD = "wifi_password";
@@ -63,30 +76,34 @@ public class ConnectionActivityViewModel extends ViewModel {
     private final SingleLiveEvent< LocalOnlyHotspotQrModel > hotspotQrModel = new SingleLiveEvent<>(); 
     private final ExecutorService qrCodeExecutor = Executors.newSingleThreadExecutor();
     
-    private final SingleLiveEvent< LocalOnlyHotspotInfo > onHotspotStartedObservable = new SingleLiveEvent<>();
-    private final SingleLiveEvent< LocalOnlyHotspotInfo > onHotspotStoppedObservable = new SingleLiveEvent<>();
+    private final SingleLiveEvent< LocalOnlyHotspotState > hotspotStateObservable = new SingleLiveEvent<>();
     private boolean isWaitingForHotspotResult;
     
     private final MutableLiveData< Exception > unexpectedErrorObservable = new MutableLiveData<>();
     private boolean isAnyUnexpectedErrorOccured;
     
+    private final MutableLiveData< ConnectionAttemptResult > connectionAttemptResultObservable = new MutableLiveData<>(null);
+    
     private LocalOnlyHotspotManager hotspotManager;
     private ConnectionManager connectionManager;
     
     private ClientDiscoveryManager discoveryManager;
-    private final MutableLiveData< Void > clientDiscoveryObservable = new MutableLiveData<>();
+    private final SingleLiveEvent< Void > clientDiscoveryObservable = new SingleLiveEvent<>();
   
     private ClientDiscoveryResponseManager responseManager;
-    private final MutableLiveData< Void > clientDiscoveryResponsedObservable = new MutableLiveData<>();
+    private final MutableLiveData< Object > clientDiscoveryResponsedObservable = new MutableLiveData<>(null);
     
     private LocalOnlyHotspotInfo pendingConnection;
     
     @Inject
     public ConnectionActivityViewModel( 
+        @ApplicationContext Context context,
         LocalOnlyHotspotManager hotspotManager,
         ConnectionManager connectionManager,
         ClientDiscoveryManager discoveryManager, 
         ClientDiscoveryResponseManager responseManager ) {
+        
+        this.connectivityManager = ( ConnectivityManager ) context.getSystemService( Context.CONNECTIVITY_SERVICE );
         
         this.hotspotManager = hotspotManager;
         this.connectionManager = connectionManager;
@@ -220,12 +237,12 @@ public class ConnectionActivityViewModel extends ViewModel {
         hotspotManager.stopLocalOnlyHotspot();
     }
     
-    public SingleLiveEvent< LocalOnlyHotspotInfo > getOnHotspotStartedObservable() {
-        return onHotspotStartedObservable;
+    public SingleLiveEvent< LocalOnlyHotspotState > getHotspotStateObservable() {
+        return hotspotStateObservable;
     }
     
-    public SingleLiveEvent< LocalOnlyHotspotInfo > getOnHotspotStoppedObservable() {
-        return onHotspotStoppedObservable;
+    public LocalOnlyHotspotInfo getActiveHotspotInfo() {
+        return hotspotManager.getActiveHotspotInfo();
     }
     
     public void startLocalOnlyHotspot() {
@@ -233,11 +250,9 @@ public class ConnectionActivityViewModel extends ViewModel {
         if( isWaitingForHotspotResult )
             return;
         
-        //reusing same hotspot
+        //reusing old hotspot
         if( hotspotManager.isLocalOnlyHotspotActive() ) {
-            onHotspotStartedObservable.postValue( 
-                hotspotManager.getActiveHotspotInfo()
-            );
+            hotspotStateObservable.postValue( LocalOnlyHotspotState.STARTED );
             return;
         }
       
@@ -246,14 +261,14 @@ public class ConnectionActivityViewModel extends ViewModel {
             new LocalOnlyHotspotManager.LocalOnlyHotspotListener() {
                 
                @Override
-               public void onLocalOnlyHotspotStarted( LocalOnlyHotspotInfo hotspotInfo ) {
+               public void onStarted( LocalOnlyHotspotInfo hotspotInfo ) {
                    isWaitingForHotspotResult = false;   
-                   onHotspotStartedObservable.postValue( hotspotInfo );
+                   hotspotStateObservable.postValue( LocalOnlyHotspotState.STARTED );
                }
                
                @Override
-               public void onLocalOnlyHotspotStopped( LocalOnlyHotspotInfo hotspotInfo ) {
-                   onHotspotStoppedObservable.postValue( hotspotInfo );
+               public void onStopped( LocalOnlyHotspotInfo hotspotInfo ) {
+                   hotspotStateObservable.postValue( LocalOnlyHotspotState.STOPPED );
                }
             },
             error -> {
@@ -262,9 +277,40 @@ public class ConnectionActivityViewModel extends ViewModel {
             }
         );
     }
+    
+    public void bindProcessToNetwork(Network network) {
+        connectivityManager.bindProcessToNetwork(network);
+    }
+    
+    public void bindProcessToDefaultNetwork() {
+        connectivityManager.bindProcessToNetwork(null);
+    }
+    
+    public LiveData< ConnectionAttemptResult > getConnectionAttemptResultObservable() {
+        return connectionAttemptResultObservable;
+    }
      
-    public void connectToHotspot( LocalOnlyHotspotInfo hotspotInfo, ConnectionManager.OnConnectionSuccessfulListener successListener ) {
-        connectionManager.connect( hotspotInfo, successListener );
+    public void connectToHotspot( LocalOnlyHotspotInfo hotspotInfo ) {
+        connectionManager.connect( 
+            hotspotInfo, 
+            new ConnectionManager.ConnectionListener() {
+                
+                @Override
+                public void onConnected( Network network ) {
+                    bindProcessToNetwork( network );
+                    connectionAttemptResultObservable.postValue(
+                        ConnectionAttemptResult.CONNECTED
+                    ); 
+                }
+                
+                @Override
+                public void onFailed() {
+                    connectionAttemptResultObservable.postValue(
+                        ConnectionAttemptResult.FAILED
+                    ); 
+                }
+            }
+        );
     }
     
     public boolean isDiscoveringClients() {
@@ -277,7 +323,7 @@ public class ConnectionActivityViewModel extends ViewModel {
     
     public void startDiscoveringClients() {
         discoveryManager.startDiscovery(
-            () -> clientDiscoveryObservable.postValue( null ),
+            () -> clientDiscoveryObservable.postValue(null),
             error -> postUnexpectedError( error )
         );
     }
@@ -290,13 +336,13 @@ public class ConnectionActivityViewModel extends ViewModel {
         return responseManager.isRespondingDiscovery();
     }
     
-    public LiveData< Void > getClientDiscoveryResponsedObservable() {
+    public LiveData< Object > getClientDiscoveryResponsedObservable() {
         return clientDiscoveryResponsedObservable;
     }
     
     public void startRespondingClientDiscovery() {
         responseManager.startRespondingDiscovery(
-            () -> clientDiscoveryResponsedObservable.postValue( null ),
+            () -> clientDiscoveryResponsedObservable.postValue( new Object() ),
             error -> postUnexpectedError( error )
         );
     }

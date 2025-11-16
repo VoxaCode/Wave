@@ -3,7 +3,6 @@ package com.voxacode.wave.connection.activities;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.provider.Settings;
-import android.view.WindowInsets;
 import android.widget.Toast;
 import android.os.Build;
 import android.os.Bundle;
@@ -20,6 +19,8 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import com.voxacode.wave.selection.activities.SelectionActivity;
 import com.voxacode.wave.transfer.activities.ReceiverActivity;
 import com.voxacode.wave.scanning.activities.ScannerActivity;
+import com.voxacode.wave.connection.activities.viewmodels.ConnectionActivityViewModel.ConnectionAttemptResult;
+import com.voxacode.wave.connection.activities.viewmodels.ConnectionActivityViewModel.LocalOnlyHotspotState;
 import com.voxacode.wave.connection.activities.viewmodels.ConnectionActivityViewModel;
 import com.voxacode.wave.connection.delegates.location.LocationHandler;
 import com.voxacode.wave.connection.delegates.wifi.WifiHandler;
@@ -50,7 +51,10 @@ public class ConnectionActivity extends AppCompatActivity {
     private ActivityResultLauncher< Intent > scannerLauncher;
     
     private boolean isTransferProcessStarted;
+    private boolean isConnectionProcessStarted;
     private boolean isFirstResume = true;
+    private boolean isFirstConnectionAttemptCallback = true;
+    private boolean isFirstClientDiscoveryResponsedCallback = true;
     
     private void showToast( String message ) {
         Toast.makeText( this, message, Toast.LENGTH_SHORT ).show();
@@ -106,6 +110,24 @@ public class ConnectionActivity extends AppCompatActivity {
         viewModel.stopRespondingClientDiscovery();
     }
     
+   /**
+    * when receiver comes back the hotspot will be reused
+    * and when sender comes back the hotspot will be created again
+    * allowing any device to become sender or receiver.
+    * 
+    * Similarly, when the user open the app again after minimizing,
+    * it will check if hotspot is shutdown. if the hotspot is active 
+    * already it will just check if new client is being doscovered or not.
+    */
+    
+    private void restartHotspotAndDiscovery() {
+        if( !viewModel.isLocalOnlyHotspotActive() ) {
+            startLocalOnlyHotspot();
+        } else if( !viewModel.isDiscoveringClients() ) {
+            viewModel.startDiscoveringClients();
+        }
+    }
+    
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
@@ -130,9 +152,10 @@ public class ConnectionActivity extends AppCompatActivity {
        
         viewModel = new ViewModelProvider( this ).get( ConnectionActivityViewModel.class );
         binding.deviceNickname.setText( getDeviceNickname() );
-        binding.btnScan.setOnClickListener( view -> 
-           startScannerActivity() 
-        );
+        binding.btnScan.setOnClickListener( view -> {
+            isConnectionProcessStarted = true;      
+            startScannerActivity();
+        } );
         
         viewModel.getUnexpectedErrorObservable().observe(
             this, error -> {
@@ -153,24 +176,30 @@ public class ConnectionActivity extends AppCompatActivity {
                 }
             }
         );
-     
-        viewModel.getOnHotspotStartedObservable().observe(
-            this, hotspotInfo -> {
-                viewModel.startDiscoveringClients();
-                viewModel.updateDeviceQr(
-                    ConnectionActivity.this,
-                    hotspotInfo
-                );
-            }
-        );
         
-        //This will be executed only when hotspot is shutdown 
-        //unexpectedly or by system not by reservation.close()
-        //like wifi disabled in api < 30
-        viewModel.getOnHotspotStoppedObservable().observe(
-            this, hotspotInfo -> {
-                viewModel.stopDiscoveringClients();
-                startLocalOnlyHotspot();
+        viewModel.getHotspotStateObservable().observe(
+            this, state -> {
+                switch(state) {
+                    case STARTED: {
+                        if( !viewModel.isDiscoveringClients() ) {
+                            viewModel.startDiscoveringClients();
+                        }
+                        
+                        viewModel.updateDeviceQr(
+                            ConnectionActivity.this,
+                            viewModel.getActiveHotspotInfo()
+                        );
+                        
+                        break;
+                    }
+                    
+                    //This will be executed only when hotspot is shutdown 
+                    //unexpectedly or by system not by reservation.close()
+                    //like wifi disabled in api < 30
+                    case STOPPED: startLocalOnlyHotspot(); break;
+                }
+                
+                
             }
         );
         
@@ -183,17 +212,46 @@ public class ConnectionActivity extends AppCompatActivity {
         
         viewModel.getClientDiscoveryResponsedObservable().observe(
             this, nil -> {
-                isTransferProcessStarted = true;
-                startSelectionActivity();
+                if( !isFirstClientDiscoveryResponsedCallback || nil != null ) {
+                    isConnectionProcessStarted = false;
+                    isTransferProcessStarted = true;
+                    startSelectionActivity();
+                }
+                
+                if( isFirstClientDiscoveryResponsedCallback ) {
+                    isFirstClientDiscoveryResponsedCallback = false;
+                }
             }
         );
-       
+        
+        viewModel.getConnectionAttemptResultObservable().observe(
+            this, result -> {
+                if( !isFirstConnectionAttemptCallback || result != null ) {
+                    switch(result) {
+                        case CONNECTED : viewModel.startRespondingClientDiscovery(); break;
+                        case FAILED : {
+                            showToast("Can't connect to the network");
+                            isConnectionProcessStarted = false;
+                            restartHotspotAndDiscovery();
+                            break;
+                        }
+                    }
+                }
+                
+                if( isFirstConnectionAttemptCallback ) {
+                    isFirstConnectionAttemptCallback = false;
+                }
+            }
+        );
+        
         scannerLauncher = registerForActivityResult( 
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
                 
                 if( result.getResultCode() != RESULT_OK ) {
                     showToast( "Failed to scan QR code" );
+                    isConnectionProcessStarted = false;
+                    restartHotspotAndDiscovery();
                     return;
                 }
                 
@@ -214,10 +272,7 @@ public class ConnectionActivity extends AppCompatActivity {
                     }
                     
                    //else connecting to the wifi network
-                    viewModel.connectToHotspot( 
-                        hotspotInfo,
-                        () -> viewModel.startRespondingClientDiscovery()
-                    );
+                    viewModel.connectToHotspot( hotspotInfo );
             
                 } catch( Exception e ) {
                     showToast( "Invalid QR code" );
@@ -244,8 +299,7 @@ public class ConnectionActivity extends AppCompatActivity {
                     if( viewModel.isConnectionPending() ) {
                         //connecting to wifi network
                         viewModel.connectToHotspot( 
-                            viewModel.getPendingConnection(),
-                            () -> viewModel.startRespondingClientDiscovery()
+                            viewModel.getPendingConnection()
                         );
                     }
                 }
@@ -310,24 +364,18 @@ public class ConnectionActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        
         if( isTransferProcessStarted ) {
             isTransferProcessStarted = false;
-            viewModel.stopRespondingClientDiscovery();
-            viewModel.startDiscoveringClients();
-            
-            //when receiver comes back the hotspot will be reused
-            //and when sender comes back the hotspot will be created again
-            //allowing any device to become sender or receiver
-            if( !viewModel.isLocalOnlyHotspotActive() ) {
-                startLocalOnlyHotspot();
-            } 
-            
-        } else if( !isFirstResume ) {
-            viewModel.startDiscoveringClients();
+            viewModel.bindProcessToDefaultNetwork();
+            restartHotspotAndDiscovery();
+        } else if( !isFirstResume && !isConnectionProcessStarted ) {
+            restartHotspotAndDiscovery();
         }
         
-        if( isFirstResume )
+        if( isFirstResume ) {
             isFirstResume = false;
+        }
     }
     
     @Override

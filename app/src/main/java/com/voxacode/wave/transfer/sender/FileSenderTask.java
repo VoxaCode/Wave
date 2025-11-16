@@ -198,6 +198,7 @@ public class FileSenderTask implements Callable< Void > {
         }
         
         tryClosingSocketChannel(); 
+        selectedFiles.clear();
         return null;
     }
 }
