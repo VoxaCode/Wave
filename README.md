@@ -64,7 +64,5 @@ Check out the [LICENSE](LICENSE) file for details.
 
 ---
 
-## 👨‍💻 Built By
-
-**Deepak Singh**  
+## 👨‍💻 Built By 
 GitHub: [@VoxaCode](https://github.com/VoxaCode)
